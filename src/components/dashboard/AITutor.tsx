@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Bot, Sparkles, Send } from 'lucide-react';
 
 export function AITutor() {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'bot',
-      content: "Hello! I'm your AI tutor. How can I help you with your AI studies today?",
+      message: 'Hello! I\'m your AI tutor. How can I help you with your AI studies today?',
       timestamp: new Date().toISOString()
     }
   ]);
@@ -16,21 +16,24 @@ export function AITutor() {
     if (!message.trim()) return;
 
     // Add user message
-    const userMessage = {
+    const newMessage = {
       type: 'user',
-      content: message,
+      message: message.trim(),
       timestamp: new Date().toISOString()
     };
 
-    // Mock AI response
-    const aiResponse = {
-      type: 'bot',
-      content: "I understand you're asking about AI concepts. Let me help explain that in detail...",
-      timestamp: new Date().toISOString()
-    };
-
-    setChatHistory(prev => [...prev, userMessage, aiResponse]);
+    setChatHistory(prev => [...prev, newMessage]);
     setMessage('');
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponse = {
+        type: 'bot',
+        message: 'I understand you\'re asking about AI. Let me help you with that. What specific aspect would you like to explore?',
+        timestamp: new Date().toISOString()
+      };
+      setChatHistory(prev => [...prev, botResponse]);
+    }, 1000);
   };
 
   return (
@@ -52,81 +55,69 @@ export function AITutor() {
       <div className="bg-white rounded-xl shadow-sm h-[600px] flex flex-col">
         {/* Chat Messages */}
         <div className="flex-1 p-6 overflow-y-auto space-y-4">
-          {chatHistory.map((msg, index) => (
+          {chatHistory.map((chat, index) => (
             <div
               key={index}
-              className={`flex items-start space-x-3 ${
-                msg.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''
-              }`}
+              className={`flex ${chat.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  msg.type === 'user'
-                    ? 'bg-indigo-100'
-                    : 'bg-gray-100'
-                }`}
-              >
-                {msg.type === 'user' ? (
-                  <User className="h-4 w-4 text-indigo-600" />
-                ) : (
-                  <Bot className="h-4 w-4 text-gray-600" />
-                )}
-              </div>
-              <div
-                className={`px-4 py-2 rounded-lg max-w-[80%] ${
-                  msg.type === 'user'
+                className={`max-w-[70%] rounded-lg p-4 ${
+                  chat.type === 'user'
                     ? 'bg-indigo-600 text-white'
                     : 'bg-gray-100 text-gray-900'
                 }`}
               >
-                <p>{msg.content}</p>
-                <span className="text-xs opacity-70 mt-1 block">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </span>
+                <p>{chat.message}</p>
+                <p className={`text-xs mt-1 ${
+                  chat.type === 'user' ? 'text-indigo-200' : 'text-gray-500'
+                }`}>
+                  {new Date(chat.timestamp).toLocaleTimeString()}
+                </p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Input Form */}
-        <form onSubmit={handleSubmit} className="p-4 border-t">
-          <div className="flex space-x-4">
+        {/* Message Input */}
+        <div className="border-t p-4">
+          <form onSubmit={handleSubmit} className="flex space-x-4">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask your AI tutor anything..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
             <button
               type="submit"
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2"
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
               <span>Send</span>
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
 
-      {/* Quick Questions */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold mb-4">Suggested Questions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            "Explain neural networks in simple terms",
-            "What's the difference between supervised and unsupervised learning?",
-            "How does backpropagation work?",
-            "Can you explain gradient descent?"
-          ].map((question, index) => (
-            <button
-              key={index}
-              onClick={() => setMessage(question)}
-              className="text-left px-4 py-2 rounded-lg border border-gray-200 hover:border-indigo-600 hover:text-indigo-600 transition-colors"
-            >
-              {question}
-            </button>
-          ))}
+      {/* Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="font-semibold text-gray-900 mb-2">24/7 Assistance</h3>
+          <p className="text-gray-600 text-sm">
+            Get help anytime with your AI studies, homework, or exam preparation.
+          </p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="font-semibold text-gray-900 mb-2">Personalized Learning</h3>
+          <p className="text-gray-600 text-sm">
+            Adaptive responses based on your knowledge level and learning style.
+          </p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="font-semibold text-gray-900 mb-2">Interactive Practice</h3>
+          <p className="text-gray-600 text-sm">
+            Engage in interactive problem-solving and get instant feedback.
+          </p>
         </div>
       </div>
     </div>
