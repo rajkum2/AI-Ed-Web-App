@@ -1,8 +1,13 @@
 import React from 'react';
 import { Brain, Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const location = useLocation();
+  
+  // Mock authentication state - in a real app, this would come from your auth system
+  const isAuthenticated = location.pathname.startsWith('/dashboard');
 
   const menuItems = [
     { label: 'Home', href: '/' },
@@ -13,60 +18,71 @@ export function Navigation() {
 
   // These items will only be shown when user is logged in
   const dashboardItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Study Plan', href: '/study-plan' },
-    { label: 'Flashcards', href: '/flashcards' },
-    { label: 'Quizzes', href: '/quizzes' },
-    { label: 'Mock Exams', href: '/mock-exams' },
-    { label: 'Progress', href: '/progress' },
-    { label: 'AI Tutor', href: '/tutor' },
+    { label: 'Overview', href: '/dashboard' },
+    { label: 'Study Plan', href: '/dashboard/study-plan' },
+    { label: 'Flashcards', href: '/dashboard/flashcards' },
+    { label: 'Quizzes', href: '/dashboard/quizzes' },
+    { label: 'Mock Exams', href: '/dashboard/mock-exams' },
+    { label: 'Progress', href: '/dashboard/progress' },
+    { label: 'AI Tutor', href: '/dashboard/ai-tutor' },
+    { label: 'Settings', href: '/dashboard/settings' }
   ];
-
-  // Mock authentication state
-  const isAuthenticated = false;
 
   return (
     <nav className="bg-white shadow-sm fixed w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2">
               <Brain className="h-8 w-8 text-indigo-600" />
               <span className="text-xl font-bold text-gray-900">AI Study Hub</span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <a
+            {!isAuthenticated && menuItems.map((item) => (
+              <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className="text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             {isAuthenticated ? (
               <>
-                <a
-                  href="/dashboard"
+                <Link
+                  to="/dashboard"
                   className="text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
                 >
                   Dashboard
-                </a>
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors">
+                </Link>
+                <Link
+                  to="/"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors"
+                  onClick={() => {
+                    // TODO: Implement logout logic
+                    console.log('Logging out...');
+                  }}
+                >
                   Sign Out
-                </button>
+                </Link>
               </>
             ) : (
               <div className="flex items-center space-x-4">
-                <button className="text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium">
+                <Link
+                  to="/login"
+                  className="text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
+                >
                   Login
-                </button>
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors">
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors"
+                >
                   Sign Up
-                </button>
+                </Link>
               </div>
             )}
           </div>
@@ -91,38 +107,56 @@ export function Navigation() {
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {menuItems.map((item) => (
-              <a
+            {!isAuthenticated && menuItems.map((item) => (
+              <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className="text-gray-600 hover:text-indigo-600 block px-3 py-2 text-base font-medium"
+                onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             {isAuthenticated ? (
               <>
                 {dashboardItems.map((item) => (
-                  <a
+                  <Link
                     key={item.href}
-                    href={item.href}
+                    to={item.href}
                     className="text-gray-600 hover:text-indigo-600 block px-3 py-2 text-base font-medium"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
-                <button className="w-full bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors mt-4">
+                <Link
+                  to="/"
+                  className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors mt-4"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    // TODO: Implement logout logic
+                    console.log('Logging out...');
+                  }}
+                >
                   Sign Out
-                </button>
+                </Link>
               </>
             ) : (
               <div className="space-y-2 mt-4">
-                <button className="w-full text-gray-600 hover:text-indigo-600 px-3 py-2 text-base font-medium">
+                <Link
+                  to="/login"
+                  className="block w-full text-gray-600 hover:text-indigo-600 px-3 py-2 text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Login
-                </button>
-                <button className="w-full bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors">
+                </Link>
+                <Link
+                  to="/signup"
+                  className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Sign Up
-                </button>
+                </Link>
               </div>
             )}
           </div>

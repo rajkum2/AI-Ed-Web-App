@@ -6,6 +6,11 @@ import { Features } from './pages/Features';
 import { StudyPlan } from './pages/StudyPlan';
 import { Flashcards } from './pages/Flashcards';
 import { Dashboard } from './pages/Dashboard';
+import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
+import { Pricing } from './pages/Pricing';
+import { Contact } from './pages/Contact';
+import { Footer } from './components/Footer';
 
 function FeatureCard({ icon: Icon, title, description }: { 
   icon: React.ElementType, 
@@ -170,20 +175,49 @@ function HomePage() {
   );
 }
 
-function App() {
+// Mock authentication check - replace with actual auth logic
+const isAuthenticated = () => {
+  return localStorage.getItem('isAuthenticated') === 'true';
+};
+
+// Protected Route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+};
+
+export function App() {
   return (
     <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/study-plan" element={<StudyPlan />} />
-        <Route path="/flashcards" element={<Flashcards />} />
-        <Route path="/dashboard/*" element={<Dashboard />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Navigation />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            
+            {/* Protected Dashboard Routes */}
+            <Route
+              path="/dashboard/*"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Redirect unknown routes to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }
-
-export default App;
